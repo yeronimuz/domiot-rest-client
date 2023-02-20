@@ -1,0 +1,488 @@
+# TODO: Enumerate user permissions (or make dynamic)
+# TODO: Create a separate openapi project for the database model (separate DTO from database model)
+# TODO: Security measures for user.password
+openapi: "3.0.3"
+info:
+  version: 1.0.1
+  title: Lankheet Domotics api
+  description: Lankheet Domotics API
+servers:
+  - url: /rest/domiot-iot-rest/v1
+security:
+  - apiKeyAuth: []
+tags:
+  - name: Site
+  - name: Device
+  - name: User
+paths:
+  /site:
+    post:
+      tags:
+        - Site
+      summary: Add a new site
+      operationId: addSite
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Site'
+      responses:
+        '200':
+          description: Site saved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Site'
+  /site/{siteId}:
+    get:
+      tags:
+        - Site
+      summary: Get a site
+      operationId: getSite
+      parameters:
+        - name: siteId
+          in: path
+          description: site identification
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Site content
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Site'
+    put:
+      tags:
+        - Site
+      summary: Update a site
+      operationId: updateSite
+      parameters:
+        - name: siteId
+          in: path
+          description: site identification
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Site'
+      responses:
+        '200':
+          description: Site
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Site'
+  /site/{siteId}/devices:
+    get:
+      tags:
+        - Device
+      summary: Get all devices of a site
+      operationId: getSiteDevices
+      parameters:
+        - name: siteId
+          in: path
+          description: site identification
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Devices
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Device'
+    post:
+      tags:
+        - Device
+      summary: Add devices to a site
+      operationId: addDevices
+      parameters:
+        - name: siteId
+          in: path
+          description: site identification
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Device'
+      responses:
+        '200':
+          description: Device is updated
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Device'
+  /site/{siteId}/devices/{deviceId}:
+    get:
+      tags:
+        - Device
+      summary: Get a device
+      operationId: getDevice
+      parameters:
+        - name: siteId
+          in: path
+          description: site identification
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: deviceId
+          in: path
+          description: The device identification
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Device content
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Device'
+    put:
+      tags:
+        - Device
+      summary: Update a device configuration
+      operationId: updateDevice
+      parameters:
+        - name: siteId
+          in: path
+          description: site identification
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: deviceId
+          in: path
+          description: The device identification
+          required: true
+          schema:
+            type: object
+      requestBody:
+        content:
+         application/json:
+            schema:
+              $ref: '#/components/schemas/Device'
+      responses:
+        '200':
+          description: Device is updated
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Device'
+  /user:
+    post:
+      tags:
+        - User
+      summary: Add a new User
+      operationId: addUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: User saved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /user/{userId}:
+    get:
+      tags:
+        - User
+      summary: Get a user
+      operationId: getUser
+      parameters:
+        - name: userId
+          in: path
+          description: user identification
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: User content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    put:
+      tags:
+        - User
+      summary: Update a user
+      operationId: updateUser
+      parameters:
+        - name: userId
+          in: path
+          description: user identification
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: User content
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/User'
+components:
+  schemas:
+    Id:
+      type: integer
+      format: int64
+      readOnly: true
+      description: 'unique identification'
+    User:
+      description: 'A user of the site'
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        role:
+          $ref: '#/components/schemas/Role'
+        password:
+          type: string
+          format: password
+        email-address:
+          type: string
+        dtRegistered:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [ ACTIVE, LOCKED, REGISTERED ]
+          x-enumNames: [ ACTIVE, LOCKED, REGISTERED ]
+          description: 'User status; active, locked (for security reasons), registered (not active)'
+    Site:
+      type: object
+      properties:
+        siteId:
+          $ref: '#/components/schemas/Id'
+        name:
+          type: string
+        description:
+          type: string
+        dtCreated:
+          format: date-time
+          type: string
+        devices:
+          items:
+            $ref: '#/components/schemas/Device'
+        mqttConfig:
+          $ref: '#/components/schemas/MqttConfig'
+        users:
+          items:
+            $ref: '#/components/schemas/User'
+    Role:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        permissions:
+          items:
+            $ref: '#/components/schemas/Permission'
+    Permission:
+      type: string
+      enum: [ ADMIN, UPDATE, READ ]
+      x-enumNames: [ ADMIN, UPDATE, READ ]
+      description: 'User permission; admin (all), update (read + write), read (no write)'
+    Device:
+      type: object
+      description: 'A device can have multiple sensors and/or actuators'
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        manufacturerId:
+          type: string
+          description: 'identification of the manufacturerId, may be in hex format'
+        modelId:
+          type: string
+          description: 'The model id from the manufacturer'
+        firmwareVersion:
+          type: string
+          description: 'The currently running version of the firmware (major.minor.fix.build)'
+        hardwareVersion:
+          type: string
+          description: 'The hardware version as printed on the PCB or advertised through other info'
+        macAddress:
+          type: string
+          description: 'The physical address of the device in hex format'
+        mqttConfig:
+          $ref: '#/components/schemas/MqttConfig'
+        parameters:
+          items:
+            $ref: "#/components/schemas/DomiotParameter"
+          example:
+            repeatValuesAfter: 60 # seconds
+            internalQueueSize: 10000 # number of readings that can internally be stored
+        sensors:
+          items:
+            $ref: '#/components/schemas/Sensor'
+        actuators:
+          items:
+            $ref: '#/components/schemas/Actuator'
+    Sensor:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        type:
+            $ref: '#/components/schemas/SensorType'
+        parameters:
+          items:
+            $ref: "#/components/schemas/DomiotParameter"
+        mqttTopic:
+          $ref: '#/components/schemas/MqttTopic'
+    DomiotParameter:
+      type: object
+      properties:
+        name:
+          type: string
+        parameterType:
+          type: string
+          enum: [ String, Number, Boolean]
+        value:
+          type: object
+    SensorType:
+      type: string
+      enum:
+      - NOT_USED        # 0
+      - POWER_PT1       # 1
+      - POWER_PT2       # 2
+      - POWER_CT1       # 3
+      - POWER_CT2       # 4
+      - POWER_AC        # 5
+      - POWER_AP        # 6
+      - GAS_METER       # 7
+      - TEMP            # 8
+      - HUMID           # 9
+      - WATER           # 10
+      - GAS_SENSOR      # 11
+      - HYDRO           # 12
+      - STATUS          # 13
+      - VOLTAGE_LEVEL   # 14
+      - CURRENT_LEVEL   # 15
+      description: 'Sensor types; the first entry is for making the first one start with ordinal 1'
+    SensorValue:
+      description: 'A sensor value correspondents to a measurement taken by a sensor'
+      type: object
+      properties:
+        sensor:
+          $ref: '#/components/schemas/Sensor'
+        timestamp:
+          description: 'date-time of occurrence'
+          type: string
+          format: date-time
+        value:
+          type: number
+          format: double
+    MqttConfig:
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        clientId:
+          type: number
+          description: 'The unique identification on the mqtt broker'
+        userId:
+          type: number
+          description: 'The user reference for logging into the mqtt broker'
+        url:
+          type: string
+          description: 'The url of the mqtt broker (tcp://localhost:1883)'
+        topics:
+          description: 'The configured topics for the mqtt broker'
+          items:
+            $ref: '#/components/schemas/MqttTopic'
+      description: 'Operational parameters for connecting to the MQTT broker'
+    MqttTopic:
+      properties:
+        path:
+          type: string
+          description: 'the mqtt topic path e.g. home1/0/fusebox/p1/pact1'
+      type: object
+      description: 'The configured topics for the local mqtt broker'
+    Actuator:
+      type: object
+      description: 'An actuator can operate devices. The P1 smart meter is an example of such a device'
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        parameters:
+          items:
+            $ref: "#/components/schemas/DomiotParameter"
+        mqttTopic:
+          $ref: '#/components/schemas/MqttTopic'
+    Command:
+      type: object
+      description: 'A command is an event to act on a sensor value or timer'
+      properties:
+        predicateActionList:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              predicate:
+                type: object
+                additionalProperties:
+                  type: object
+                  properties:
+                    parameter:
+                      type: string
+                      description: 'The parameter that is to be inspected'
+                    value:
+                      type: string
+                      description: 'Relational specification of the parameter value ( using <, >, ==, )'
+              action:
+                type: object
+                properties:
+                  delay:
+                    type: integer
+                    description: 'How many ms should be waited before executing the action'
+                  actionCommand:
+                    type: string
+                    description: 'TODO: Should be put an mqtt command in here?'
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: jwt
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
