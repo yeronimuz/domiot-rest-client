@@ -29,6 +29,9 @@ dependencies {
     compileOnly 'jakarta.platform:jakarta.jakartaee-api:9.1.0'
 
     implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.10.0'
+    implementation group: 'com.squareup.okhttp3', name: 'logging-interceptor', version: '4.10.0'
+    implementation group: 'com.google.code.gson', name: 'gson', version: '2.10.1'
+    implementation group: 'io.gsonfire', name: 'gson-fire', version: '1.8.5'
     implementation group: 'io.swagger.codegen.v3', name: 'swagger-generator', version: '3.0.36'
     implementation group: 'io.swagger.core.v3', name: 'swagger-annotations-jakarta', version: '2.2.8'
     implementation group: 'io.swagger.core.v3', name: 'swagger-jaxrs2', version: '2.2.8'
@@ -94,12 +97,10 @@ compileJava.dependsOn('copyGenerated')
 
 publishing{
     publications{
-        maven(MavenPublication){
+        pluginMaven(MavenPublication){
             groupId findProperty('group')
             artifactId findProperty('name')
-            version findProperty('version') + '-' + findProperty('classifier')
-
-            from components.java
+            version findProperty('version')
         }
     }
 }
